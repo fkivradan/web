@@ -2,38 +2,48 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Geri Sayım Aracı</title>
+  <title>Türkoğlu İlçe Milli Eğitim Müdürlüğü</title>
   <style>
     body { text-align: center; font-family: sans-serif; margin-top: 50px; }
-    #countdown { font-size: 48px; }
+    button {
+      font-size: 20px;
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+    }
+    #countdown {
+      font-size: 48px;
+      margin-top: 30px;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Etkinlik Başlangıcına Kalan Süre</h1>
+  <h1>Geri Sayım Süresini Seçin</h1>
+  <button onclick="baslat(30)">30 Saniye</button>
+  <button onclick="baslat(60)">60 Saniye</button>
+  <button onclick="baslat(90)">90 Saniye</button>
+
   <div id="countdown"></div>
 
   <script>
-    // Geri sayımın biteceği tarih
-    const hedefTarih = new Date("2025-07-01 00:00:00").getTime();
+    let sayaç;
 
-    const sayaç = setInterval(() => {
-      const simdi = new Date().getTime();
-      const fark = hedefTarih - simdi;
+    function baslat(saniye) {
+      clearInterval(sayaç); // Önceki sayacı durdur
+      let kalan = saniye;
+      document.getElementById("countdown").innerHTML = kalan + " saniye";
 
-      const gun = Math.floor(fark / (1000 * 60 * 60 * 24));
-      const saat = Math.floor((fark % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const dakika = Math.floor((fark % (1000 * 60 * 60)) / (1000 * 60));
-      const saniye = Math.floor((fark % (1000 * 60)) / 1000);
-
-      document.getElementById("countdown").innerHTML =
-        `${gun} Gün ${saat} Saat ${dakika} Dakika ${saniye} Saniye`;
-
-      if (fark < 0) {
-        clearInterval(sayaç);
-        document.getElementById("countdown").innerHTML = "Süre Doldu!";
-      }
-    }, 1000);
+      sayaç = setInterval(() => {
+        kalan--;
+        if (kalan > 0) {
+          document.getElementById("countdown").innerHTML = kalan + " saniye";
+        } else {
+          clearInterval(sayaç);
+          document.getElementById("countdown").innerHTML = "Süre Bitti!";
+        }
+      }, 1000);
+    }
   </script>
 
 </body>
