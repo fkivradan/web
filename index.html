@@ -4,22 +4,16 @@
   <meta charset="UTF-8">
   <title>Gelişmiş Geri Sayım Aracı</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #141e30, #243b55);
-      color: #fff;
+      background: linear-gradient(135deg, #f7f7f7, #e0e0e0);
+      color: #333;
       text-align: center;
       padding: 50px 20px;
+      transition: background-color 0.5s;
     }
-    h1 {
-      margin-bottom: 30px;
-      font-size: 32px;
-    }
+    h1 { margin-bottom: 30px; font-size: 32px; }
     button {
       font-size: 18px;
       padding: 12px 20px;
@@ -29,9 +23,7 @@
       border-radius: 8px;
       transition: background-color 0.3s, transform 0.2s;
     }
-    button:active {
-      transform: scale(0.96);
-    }
+    button:active { transform: scale(0.96); }
     .time-button {
       background-color: #0275d8;
       color: white;
@@ -39,28 +31,29 @@
     .start { background-color: #28a745; color: white; }
     .pause { background-color: #ffc107; color: #333; }
     .reset { background-color: #dc3545; color: white; }
-
+    .add-button {
+      background-color: #17a2b8;
+      color: white;
+    }
     #countdown {
       font-size: 64px;
       margin: 30px 0;
     }
-
     .progress-container {
       width: 90%;
       max-width: 600px;
       height: 20px;
-      background: #444;
+      background: #ddd;
       border-radius: 10px;
       overflow: hidden;
       margin: 20px auto 40px;
     }
     .progress-bar {
       height: 100%;
-      background: linear-gradient(to right, #00ff99, #00ccff);
+      background: linear-gradient(to right, #00cc66, #00bfff);
       width: 0%;
       transition: width 1s linear;
     }
-
     @media(max-width: 480px) {
       h1 { font-size: 24px; }
       button { font-size: 16px; padding: 10px 16px; }
@@ -86,13 +79,19 @@
   <button class="pause" onclick="durdur()">⏸️ Durdur</button>
   <button class="reset" onclick="sifirla()">🔄 Sıfırla</button>
 
-  <!-- Ses -->
+  <h2>Süreye Ekle:</h2>
+  <button class="add-button" onclick="ekle(5)">+5s</button>
+  <button class="add-button" onclick="ekle(10)">+10s</button>
+  <button class="add-button" onclick="ekle(15)">+15s</button>
+
   <audio id="alarm-sesi" src="https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3"></audio>
 
   <script>
     let kalan = 0;
     let toplam = 0;
     let sayaç = null;
+    let yanipSonmeSayaci = null;
+    let yanipSonmeAdet = 0;
 
     function ayarla(saniye) {
       durdur();
@@ -100,6 +99,8 @@
       toplam = saniye;
       document.getElementById("countdown").innerHTML = kalan + " saniye";
       document.getElementById("progress-bar").style.width = "0%";
+      temizleYanipSonme();
+      document.body.style.background = "linear-gradient(135deg, #f7f7f7, #e0e0e0)";
     }
 
     function baslat() {
@@ -115,6 +116,7 @@
             document.getElementById("countdown").innerHTML = "⏰ Süre Bitti!";
             guncelleProgress();
             document.getElementById("alarm-sesi").play();
+            baslatYanipSonme();
           }
         }, 1000);
       }
@@ -131,12 +133,45 @@
       toplam = 0;
       document.getElementById("countdown").innerHTML = "Süre Seçiniz";
       document.getElementById("progress-bar").style.width = "0%";
+      temizleYanipSonme();
+      document.body.style.background = "linear-gradient(135deg, #f7f7f7, #e0e0e0)";
+    }
+
+    function ekle(saniye) {
+      if (toplam > 0) {
+        kalan += saniye;
+        toplam += saniye;
+        document.getElementById("countdown").innerHTML = kalan + " saniye";
+        guncelleProgress();
+      }
     }
 
     function guncelleProgress() {
       let oran = ((toplam - kalan) / toplam) * 100;
       if (isNaN(oran)) oran = 0;
       document.getElementById("progress-bar").style.width = oran + "%";
+    }
+
+    function baslatYanipSonme() {
+      yanipSonmeAdet = 0;
+      yanipSonmeSayaci = setInterval(() => {
+        if (yanipSonmeAdet >= 10) {
+          clearInterval(yanipSonmeSayaci);
+          document.body.style.background = "linear-gradient(135deg, #f7f7f7, #e0e0e0)";
+        } else {
+          if (yanipSonmeAdet % 2 === 0) {
+            document.body.style.background = "#ff0000";
+          } else {
+            document.body.style.background = "#ffffff";
+          }
+          yanipSonmeAdet++;
+        }
+      }, 500);
+    }
+
+    function temizleYanipSonme() {
+      clearInterval(yanipSonmeSayaci);
+      yanipSonmeSayaci = null;
     }
   </script>
 
