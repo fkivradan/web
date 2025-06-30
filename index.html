@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Türkoğlu İlçe Milli Eğitim Müdürlüğü</title>
+  <title>Geri Sayım Aracı</title>
   <style>
     body { text-align: center; font-family: sans-serif; margin-top: 50px; }
     button {
@@ -10,39 +10,70 @@
       padding: 10px 20px;
       margin: 10px;
       cursor: pointer;
+      border: none;
+      border-radius: 5px;
     }
     #countdown {
       font-size: 48px;
-      margin-top: 30px;
+      margin: 30px 0;
+    }
+    .start { background-color: #4CAF50; color: white; }
+    .pause { background-color: #f0ad4e; color: white; }
+    .reset { background-color: #d9534f; color: white; }
+    .time-button {
+      background-color: #0275d8;
+      color: white;
     }
   </style>
 </head>
 <body>
 
   <h1>Geri Sayım Süresini Seçin</h1>
-  <button onclick="baslat(30)">30 Saniye</button>
-  <button onclick="baslat(60)">60 Saniye</button>
-  <button onclick="baslat(90)">90 Saniye</button>
 
-  <div id="countdown"></div>
+  <button class="time-button" onclick="ayarla(30)">⏱️ 30 Saniye</button>
+  <button class="time-button" onclick="ayarla(60)">⏱️ 60 Saniye</button>
+  <button class="time-button" onclick="ayarla(90)">⏱️ 90 Saniye</button>
+
+  <div id="countdown">Süre Seçiniz</div>
+
+  <button class="start" onclick="baslat()">▶️ Başlat</button>
+  <button class="pause" onclick="durdur()">⏸️ Durdur</button>
+  <button class="reset" onclick="sifirla()">🔄 Sıfırla</button>
 
   <script>
-    let sayaç;
+    let kalan = 0;
+    let sayaç = null;
 
-    function baslat(saniye) {
-      clearInterval(sayaç); // Önceki sayacı durdur
-      let kalan = saniye;
+    function ayarla(saniye) {
+      durdur();
+      kalan = saniye;
       document.getElementById("countdown").innerHTML = kalan + " saniye";
+    }
 
-      sayaç = setInterval(() => {
-        kalan--;
-        if (kalan > 0) {
-          document.getElementById("countdown").innerHTML = kalan + " saniye";
-        } else {
-          clearInterval(sayaç);
-          document.getElementById("countdown").innerHTML = "Süre Bitti!";
-        }
-      }, 1000);
+    function baslat() {
+      if (kalan > 0 && sayaç === null) {
+        sayaç = setInterval(() => {
+          kalan--;
+          if (kalan > 0) {
+            document.getElementById("countdown").innerHTML = kalan + " saniye";
+          } else {
+            clearInterval(sayaç);
+            sayaç = null;
+            document.getElementById("countdown").innerHTML = "Süre Bitti!";
+          }
+        }, 1000);
+      }
+    }
+
+    function durdur() {
+      clearInterval(sayaç);
+      sayaç = null;
+    }
+
+    function sifirla() {
+      durdur();
+      kalan = 0;
+      document.getElementById("countdown").innerHTML = "Süre Seçiniz";
     }
   </script>
 
