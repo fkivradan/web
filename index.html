@@ -2,27 +2,69 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Geri Sayım Aracı</title>
+  <title>Gelişmiş Geri Sayım Aracı</title>
   <style>
-    body { text-align: center; font-family: sans-serif; margin-top: 50px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #141e30, #243b55);
+      color: #fff;
+      text-align: center;
+      padding: 50px 20px;
+    }
+    h1 {
+      margin-bottom: 30px;
+      font-size: 32px;
+    }
     button {
-      font-size: 20px;
-      padding: 10px 20px;
+      font-size: 18px;
+      padding: 12px 20px;
       margin: 10px;
       cursor: pointer;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
+      transition: background-color 0.3s, transform 0.2s;
     }
-    #countdown {
-      font-size: 48px;
-      margin: 30px 0;
+    button:active {
+      transform: scale(0.96);
     }
-    .start { background-color: #4CAF50; color: white; }
-    .pause { background-color: #f0ad4e; color: white; }
-    .reset { background-color: #d9534f; color: white; }
     .time-button {
       background-color: #0275d8;
       color: white;
+    }
+    .start { background-color: #28a745; color: white; }
+    .pause { background-color: #ffc107; color: #333; }
+    .reset { background-color: #dc3545; color: white; }
+
+    #countdown {
+      font-size: 64px;
+      margin: 30px 0;
+    }
+
+    .progress-container {
+      width: 90%;
+      max-width: 600px;
+      height: 20px;
+      background: #444;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 20px auto 40px;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(to right, #00ff99, #00ccff);
+      width: 0%;
+      transition: width 1s linear;
+    }
+
+    @media(max-width: 480px) {
+      h1 { font-size: 24px; }
+      button { font-size: 16px; padding: 10px 16px; }
+      #countdown { font-size: 48px; }
     }
   </style>
 </head>
@@ -36,18 +78,28 @@
 
   <div id="countdown">Süre Seçiniz</div>
 
+  <div class="progress-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
   <button class="start" onclick="baslat()">▶️ Başlat</button>
   <button class="pause" onclick="durdur()">⏸️ Durdur</button>
   <button class="reset" onclick="sifirla()">🔄 Sıfırla</button>
 
+  <!-- Ses -->
+  <audio id="alarm-sesi" src="https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3"></audio>
+
   <script>
     let kalan = 0;
+    let toplam = 0;
     let sayaç = null;
 
     function ayarla(saniye) {
       durdur();
       kalan = saniye;
+      toplam = saniye;
       document.getElementById("countdown").innerHTML = kalan + " saniye";
+      document.getElementById("progress-bar").style.width = "0%";
     }
 
     function baslat() {
@@ -56,10 +108,13 @@
           kalan--;
           if (kalan > 0) {
             document.getElementById("countdown").innerHTML = kalan + " saniye";
+            guncelleProgress();
           } else {
             clearInterval(sayaç);
             sayaç = null;
-            document.getElementById("countdown").innerHTML = "Süre Bitti!";
+            document.getElementById("countdown").innerHTML = "⏰ Süre Bitti!";
+            guncelleProgress();
+            document.getElementById("alarm-sesi").play();
           }
         }, 1000);
       }
@@ -73,7 +128,15 @@
     function sifirla() {
       durdur();
       kalan = 0;
+      toplam = 0;
       document.getElementById("countdown").innerHTML = "Süre Seçiniz";
+      document.getElementById("progress-bar").style.width = "0%";
+    }
+
+    function guncelleProgress() {
+      let oran = ((toplam - kalan) / toplam) * 100;
+      if (isNaN(oran)) oran = 0;
+      document.getElementById("progress-bar").style.width = oran + "%";
     }
   </script>
 
